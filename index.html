@@ -35,7 +35,7 @@
     
     <!-- Fonts - Using distinctive choices -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel=
+    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -110,6 +110,12 @@
             box-sizing: border-box;
         }
 
+        html {
+            /* Ensure html can scroll */
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
@@ -118,15 +124,16 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            overflow: hidden;
             padding: 20px;
             transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Allow body to expand beyond viewport when needed */
+            overflow-x: hidden;
         }
 
         /* Animated Gradient Mesh Background */
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             width: 200%;
             height: 200%;
             background: radial-gradient(circle at 20% 50%, var(--gradient-mesh-1) 0%, transparent 50%),
@@ -135,6 +142,7 @@
             animation: gradientShift 20s ease-in-out infinite;
             opacity: 1;
             transition: opacity 0.6s;
+            z-index: 0;
         }
 
         @keyframes gradientShift {
@@ -145,13 +153,14 @@
 
         /* Floating Particles */
         .particle {
-            position: absolute;
+            position: fixed;
             width: 3px;
             height: 3px;
             background: var(--particle-color);
             border-radius: 50%;
             animation: float 25s infinite;
             pointer-events: none;
+            z-index: 1;
         }
 
         @keyframes float {
@@ -167,7 +176,7 @@
             }
         }
 
-        /* Main Container */
+        /* Main Container - FIXED: Allow natural height */
         .auth-container {
             display: flex;
             max-width: 1100px;
@@ -183,7 +192,9 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             position: relative;
             z-index: 10;
-            min-height: 650px;
+            /* REMOVED: min-height: 650px; */
+            /* ADDED: Let it grow naturally */
+            min-height: auto;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -204,6 +215,7 @@
             display: flex;
             flex-direction: column;
             transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
         }
 
         .logo-section {
@@ -368,31 +380,36 @@
             transition: color 0.3s;
         }
 
-        /* Content Area */
+        /* Content Area - FIXED: Use relative positioning and allow natural flow */
         .content-area {
             flex: 1;
             padding: 60px 70px;
             position: relative;
-            overflow: hidden;
+            /* REMOVED: overflow: hidden; */
+            /* Allow content to flow naturally */
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Form Container */
+        /* Form Container - FIXED: Change from absolute to relative positioning */
         .form-container {
-            position: absolute;
-            top: 60px;
-            left: 70px;
-            right: 70px;
+            /* CHANGED: From absolute to relative/static in flow */
+            position: relative;
+            width: 100%;
             opacity: 0;
             transform: scale(0.85) translateY(20px);
             transform-origin: center;
             transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             pointer-events: none;
+            /* Hide inactive forms completely */
+            display: none;
         }
 
         .form-container.active {
             opacity: 1;
             transform: scale(1) translateY(0);
             pointer-events: all;
+            display: block;
         }
 
         .form-title {
@@ -575,11 +592,12 @@
         @media (max-width: 479px) {
             body {
                 padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
             }
 
             .auth-container {
                 flex-direction: column;
-                min-height: auto;
                 border-radius: 20px;
                 max-width: 100%;
             }
@@ -645,12 +663,6 @@
                 padding: 25px 15px;
             }
 
-            .form-container {
-                top: 25px;
-                left: 15px;
-                right: 15px;
-            }
-
             .security-badge {
                 font-size: 10px;
                 padding: 6px 12px;
@@ -707,11 +719,12 @@
         @media (min-width: 480px) and (max-width: 767px) {
             body {
                 padding: 15px;
+                align-items: flex-start;
+                padding-top: 30px;
             }
 
             .auth-container {
                 flex-direction: column;
-                min-height: auto;
                 border-radius: 24px;
             }
 
@@ -748,12 +761,6 @@
                 padding: 30px 20px;
             }
 
-            .form-container {
-                top: 30px;
-                left: 20px;
-                right: 20px;
-            }
-
             .form-title {
                 font-size: 30px;
             }
@@ -782,12 +789,6 @@
                 padding: 45px 40px;
             }
 
-            .form-container {
-                top: 45px;
-                left: 40px;
-                right: 40px;
-            }
-
             .form-title {
                 font-size: 34px;
             }
@@ -811,12 +812,6 @@
             .content-area {
                 padding: 50px 50px;
             }
-
-            .form-container {
-                top: 50px;
-                left: 50px;
-                right: 50px;
-            }
         }
 
         /* Extra Large Devices (Desktops) - 1200px to 1599px */
@@ -832,12 +827,6 @@
             .content-area {
                 padding: 60px 70px;
             }
-
-            .form-container {
-                top: 60px;
-                left: 70px;
-                right: 70px;
-            }
         }
 
         /* 2K Screens (Large Desktops) - 1600px to 2559px */
@@ -848,7 +837,6 @@
 
             .auth-container {
                 max-width: 1400px;
-                min-height: 750px;
             }
 
             .sidebar {
@@ -884,12 +872,6 @@
                 padding: 70px 90px;
             }
 
-            .form-container {
-                top: 70px;
-                left: 90px;
-                right: 90px;
-            }
-
             .form-title {
                 font-size: 44px;
             }
@@ -920,7 +902,6 @@
 
             .auth-container {
                 max-width: 1800px;
-                min-height: 900px;
                 border-radius: 40px;
             }
 
@@ -980,12 +961,6 @@
 
             .content-area {
                 padding: 90px 120px;
-            }
-
-            .form-container {
-                top: 90px;
-                left: 120px;
-                right: 120px;
             }
 
             .security-badge {
@@ -1053,8 +1028,10 @@
 
         /* Landscape Orientation Optimization */
         @media (max-height: 600px) and (orientation: landscape) {
-            .auth-container {
-                min-height: auto;
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
             }
 
             .logo-section {
@@ -1157,6 +1134,25 @@
         .security-icon {
             width: 16px;
             height: 16px;
+        }
+
+        /* ZOOM FIX: Ensure proper scaling at different zoom levels */
+        @media (min-resolution: 1.25dppx) {
+            body {
+                font-size: 14px;
+            }
+        }
+
+        @media (min-resolution: 1.5dppx) {
+            body {
+                font-size: 13px;
+            }
+        }
+
+        @media (min-resolution: 2dppx) {
+            body {
+                font-size: 12px;
+            }
         }
     </style>
     
