@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-// Replace the old firebase-admin import with this one:
-import admin from "https://esm.sh/firebase-admin@11.0.0?target=deno"
+import * as jose from "https://deno.land/x/jose@v4.14.4/index.ts"
+
 // These headers allow your GitHub Pages site to talk to this function safely
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,20 +14,22 @@ serve(async (req) => {
   }
 
   try {
-    const { email, password } = await req.json()
+    const { email } = await req.json()
 
-    // 2. Load your Firebase Secret from the vault we set up
+    // 2. Load your Firebase Secret from the vault
     const serviceAccount = JSON.parse(Deno.env.get('FIREBASE_SERVICE_ACCOUNT') ?? '{}')
     
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      })
-    }
-
-    // 3. Generate the Custom Token for the user
-    // This token allows the user to log into ANY of your websites or your OS
-    const customToken = await admin.auth().createCustomToken(email)
+    // 3. Manually sign the JWT (Fixes the SDK_VERSION crash)
+    const privateKey = await jose.importPKCS8(serviceAccount.private_key, 'RS256')
+    
+    const customToken = await new jose.SignJWT({ uid: email })
+      .setProtectedHeader({ alg: 'RS256' })
+      .setIssuedAt()
+      .setIssuer(serviceAccount.client_email)
+      .setSubject(serviceAccount.client_email)
+      .setAudience("https://identitytoolkit.googleapis.com/google.identity.identitytoolkit.v1.IdentityToolkit")
+      .setExpirationTime('1h')
+      .sign(privateKey)
 
     return new Response(JSON.stringify({ customToken }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
