@@ -1,14 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-  // Removes .html from the address bar without reloading the page
-  if (window.location.pathname.endsWith(".html")) {
-    const cleanUrl = window.location.pathname.replace(".html", "");
-    window.history.replaceState({}, document.title, cleanUrl);
-  }
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,6 +34,10 @@
     
     <!-- Fonts - Using distinctive choices -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -1209,7 +1205,7 @@
             </button>
 
             <footer class="footer-text">
-                <p>© 2025 Amarjith Singh K.<br>All Rights Reserved.<br>Powered by ASK<sup>2</sup></p>
+                <p>© 2025 Amarjith Singh K.<br>All Rights Reserved.<br>Secured with 256-bit encryption</p>
             </footer>
         </aside>
 
@@ -1266,7 +1262,7 @@
                                autocomplete="current-password">
                     </div>
 
-                    <button href="2fa-verificaton.html"type="submit" 
+                    <button type="submit" 
                             class="submit-btn login-btn w-full py-4 text-white text-base font-bold rounded-xl relative z-10">
                         <span>Sign In Securely</span>
                         <span class="loading-spinner"></span>
@@ -1274,7 +1270,7 @@
 
                     <p class="text-center text-tertiary text-sm mt-6" style="color: var(--text-tertiary);">
                         Forgot password? 
-                        <a href="recover-account.html" class="link-text ml-1">Recover Account</a>
+                        <a href="#" class="link-text ml-1" onclick="return false;">Recover Account</a>
                     </p>
                 </form>
             </section>
@@ -1373,22 +1369,39 @@
     </main>
 
     <script>
-        // Obfuscated JavaScript - Security through obscurity + real security measures
+        // ASK Connect - Supabase + Firebase Authentication Bridge
         (function(_0xd3c4) {
             'use strict';
             
-            // Theme management
+            // --- ASK CONNECT CLOUD CONFIGURATION ---
+            const CONFIG = {
+                SUPABASE_URL: 'https://jevtetjiybxufgvmmclj.supabase.co',
+                SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpldnRldGppeWJ4dWZndm1tY2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNTc3MzUsImV4cCI6MjA1MzYzMzczNX0.NkKbZZdYz_DaE3bXJCHCWFPWv3bFkWkc3BQdD_11kGc',
+                BRIDGE_URL: 'https://jevtetjiybxufgvmmclj.supabase.co/functions/v1/ask-auth-bridge',
+                FIREBASE_CONFIG: {
+                    apiKey: "YOUR_FIREBASE_API_KEY",
+                    authDomain: "YOUR_PROJECT.firebaseapp.com",
+                    projectId: "YOUR_PROJECT_ID"
+                }
+            };
+
+            // Initialize Firebase
+            if (!firebase.apps.length) {
+                firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
+            }
+
+            // --- DOM ELEMENTS & THEME ---
             const _0x1e7f = document.documentElement;
             const _0x8a2c = localStorage.getItem('_thm') || 'dark';
             const _0x3b9f = document.querySelector('.theme-text');
             const _0x6d1a = document.querySelector('.theme-icon');
             
-            function _0x7f2d() {
-                const _0x4f2a = _0x1e7f.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                _0x1e7f.setAttribute('data-theme', _0x4f2a);
-                localStorage.setItem('_thm', _0x4f2a);
-                
-                if (_0x4f2a === 'light') {
+            // Initial Theme Setup
+            _0x1e7f.setAttribute('data-theme', _0x8a2c);
+            updateThemeUI(_0x8a2c);
+
+            function updateThemeUI(theme) {
+                if (theme === 'light') {
                     _0x3b9f.textContent = 'Light Mode';
                     _0x6d1a.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
                 } else {
@@ -1396,21 +1409,20 @@
                     _0x6d1a.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>';
                 }
             }
-            
-            _0x1e7f.setAttribute('data-theme', _0x8a2c);
-            if (_0x8a2c === 'light') {
-                _0x3b9f.textContent = 'Light Mode';
-                _0x6d1a.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
-            }
-            
-            window._0x7f2d = _0x7f2d;
+
+            window._0x7f2d = function() {
+                const _0x4f2a = _0x1e7f.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                _0x1e7f.setAttribute('data-theme', _0x4f2a);
+                localStorage.setItem('_thm', _0x4f2a);
+                updateThemeUI(_0x4f2a);
+            };
             
             // View switching
             const _0x2f8b = document.getElementById('login-form');
             const _0x9a3d = document.getElementById('signup-form');
             const _0x5e1c = document.querySelectorAll('.nav-button');
             
-            function _0x4a3b(_0x7c2e) {
+            window._0x4a3b = function(_0x7c2e) {
                 _0x5e1c.forEach(_0xb => _0xb.classList.remove('active'));
                 
                 if (_0x7c2e === 'login') {
@@ -1422,16 +1434,14 @@
                     _0x2f8b.classList.remove('active');
                     setTimeout(() => _0x9a3d.classList.add('active'), 150);
                 }
-            }
-            
-            window._0x4a3b = _0x4a3b;
+            };
             
             // Login mode selector
             const _0x6f9a = document.getElementById('_0x8d4c');
             const _0x8b2d = document.querySelectorAll('#login-form .mode-button');
             const _0x1c5e = document.getElementById('login-indicator');
             
-            function _0x5c1f(_0x3a7b, _0x9d2e) {
+            window._0x5c1f = function(_0x3a7b, _0x9d2e) {
                 const _0x4e8c = _0x3a7b.dataset.mode;
                 
                 _0x8b2d.forEach(_0xb => _0xb.classList.remove('active'));
@@ -1453,11 +1463,9 @@
                     _0x6f9a.type = _0x9e4f[_0x4e8c][1];
                     _0x6f9a.name = '_' + _0x4e8c.substring(0, 2);
                 }
-            }
+            };
             
-            window._0x5c1f = _0x5c1f;
-            
-            // Initialize mode selector
+            // Initialize mode selector and CSRF
             window.addEventListener('DOMContentLoaded', () => {
                 _0x5c1f(_0x8b2d[0], 0);
                 _0x3f8a(); // Generate CSRF tokens
@@ -1473,7 +1481,7 @@
                 sessionStorage.setItem('_tk', _0x8d7c);
             }
             
-            // Form submission handler with security
+            // --- MAIN FORM HANDLER: SUPABASE + FIREBASE BRIDGE ---
             async function _0x2b8e(_0xe4a7, _0x9b3c) {
                 _0xe4a7.preventDefault();
                 
@@ -1481,63 +1489,113 @@
                 const _0x1f8b = _0x7d2f.querySelector('button[type="submit"]');
                 const _0x6e3a = new FormData(_0x7d2f);
                 
-                // Validate CSRF token
+                // Anti-Bot: Honeypot Check
+                if (_0x6e3a.get('_hp')) {
+                    console.warn('Bot detected');
+                    return false;
+                }
+
+                // Security: CSRF Check
                 const _0x5c8d = _0x6e3a.get('_csrf');
                 if (_0x5c8d !== sessionStorage.getItem('_tk')) {
                     _0x4d9a('Security validation failed. Please refresh and try again.');
                     return false;
                 }
                 
-                // Add loading state
                 _0x1f8b.classList.add('loading');
                 _0x1f8b.disabled = true;
-                
-                // Prepare secure payload
-                const _0x2c7e = {};
-                for (let [_0xk, _0xv] of _0x6e3a.entries()) {
-                    if (_0xk !== '_csrf') {
-                        _0x2c7e[_0xk] = _0xv;
-                    }
-                }
-                _0x2c7e._act = _0x9b3c;
-                _0x2c7e._ts = Date.now();
-                _0x2c7e._fp = await _0x9f4e(); // Browser fingerprint
-                
+
                 try {
-                    const _0x8f3d = await fetch('auth.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-Token': _0x5c8d
-                        },
-                        body: JSON.stringify(_0x2c7e),
-                        credentials: 'same-origin'
-                    });
+                    // Extract form data
+                    let email, password, fullName, username, phone, dob;
                     
-                    if (!_0x8f3d.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    
-                    const _0x6b9a = await _0x8f3d.json();
-                    
-                    if (_0x6b9a.success) {
-                        _0x4d9a(_0x6b9a.message, 'success');
+                    if (_0x9b3c === 'login') {
+                        // Login flow - get identifier (username, email, or phone)
+                        const identifier = _0x6e3a.get('_id') || _0x6e3a.get('_us') || _0x6e3a.get('_em') || _0x6e3a.get('_ph');
+                        password = _0x6e3a.get('_pw');
                         
-                        if (_0x9b3c === 'login') {
-                            setTimeout(() => {
-                                window.location.href = _0x6b9a.redirect || 'home.html';
-                            }, 1000);
+                        // Determine if identifier is email, phone, or username
+                        if (identifier.includes('@')) {
+                            email = identifier;
+                        } else if (/^\+?\d{10,}$/.test(identifier)) {
+                            phone = identifier;
                         } else {
-                            _0x7d2f.reset();
+                            username = identifier;
+                        }
+                    } else {
+                        // Signup flow
+                        fullName = _0x6e3a.get('_nm');
+                        username = _0x6e3a.get('_usr');
+                        email = _0x6e3a.get('_em');
+                        phone = _0x6e3a.get('_ph');
+                        dob = _0x6e3a.get('_dob');
+                        password = _0x6e3a.get('_pw1');
+                        const confirmPassword = _0x6e3a.get('_pw2');
+                        
+                        // Validate password match
+                        if (password !== confirmPassword) {
+                            _0x4d9a('Passwords do not match');
+                            _0x1f8b.classList.remove('loading');
+                            _0x1f8b.disabled = false;
+                            return false;
+                        }
+                    }
+
+                    // 1. CALL THE ASK-AUTH-BRIDGE (Supabase Edge Function)
+                    const response = await fetch(CONFIG.BRIDGE_URL, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'apikey': CONFIG.SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                        },
+                        body: JSON.stringify({ 
+                            action: _0x9b3c,
+                            email,
+                            password,
+                            username,
+                            phone,
+                            fullName,
+                            dob,
+                            fingerprint: await _0x9f4e()
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || result.message || 'Authentication Failed');
+                    }
+
+                    // 2. SUCCESS HANDLER
+                    if (result.success && result.customToken) {
+                        // Initialize Firebase and Sign In with the minted Custom Token
+                        await firebase.auth().signInWithCustomToken(result.customToken);
+                        
+                        _0x4d9a(result.message || "Identity Verified. Connecting...", 'success');
+                        
+                        // Redirect based on action
+                        setTimeout(() => {
+                            if (_0x9b3c === 'login') {
+                                window.location.href = '2fa-verification.html';
+                            } else {
+                                _0x4a3b('login');
+                                _0x7d2f.reset();
+                            }
+                        }, 1200);
+                    } else if (result.success) {
+                        // Success but no custom token (shouldn't happen normally)
+                        _0x4d9a(result.message || 'Action completed successfully', 'success');
+                        if (_0x9b3c === 'signup') {
                             setTimeout(() => _0x4a3b('login'), 1500);
                         }
                     } else {
-                        _0x4d9a(_0x6b9a.message || 'An error occurred');
+                        throw new Error(result.error || 'Unknown error occurred');
                     }
-                } catch (_0x7e2a) {
-                    _0x4d9a('Connection error. Please try again.');
-                    console.error('Error:', _0x7e2a);
+
+                } catch (err) {
+                    _0x4d9a(err.message || 'Connection error. Please try again.');
+                    console.error('ASK Auth Error:', err);
                 } finally {
                     _0x1f8b.classList.remove('loading');
                     _0x1f8b.disabled = false;
@@ -1610,24 +1668,6 @@
                 }, 3000);
             }
             
-            // Rate limiting
-            const _0x8f7a = new Map();
-            
-            function _0x6d3c(_0xkey, _0xlimit = 5, _0xwindow = 60000) {
-                const _0xnow = Date.now();
-                const _0xrecord = _0x8f7a.get(_0xkey) || { count: 0, resetTime: _0xnow + _0xwindow };
-                
-                if (_0xnow > _0xrecord.resetTime) {
-                    _0xrecord.count = 0;
-                    _0xrecord.resetTime = _0xnow + _0xwindow;
-                }
-                
-                _0xrecord.count++;
-                _0x8f7a.set(_0xkey, _0xrecord);
-                
-                return _0xrecord.count <= _0xlimit;
-            }
-            
             // Honeypot field (invisible anti-bot measure)
             const _0x3e9b = document.createElement('input');
             _0x3e9b.type = 'text';
@@ -1641,6 +1681,3 @@
     </script>
 </body>
 </html>
-
-
-
