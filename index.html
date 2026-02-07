@@ -35,6 +35,9 @@
     <!-- Fonts - Using distinctive choices -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -1376,14 +1379,17 @@
             // --- ASK CONNECT CLOUD CONFIGURATION ---
             const CONFIG = {
                 SUPABASE_URL: 'https://jevtetjiybxufgvmmclj.supabase.co',
-                SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpldnRldGppeWJ4dWZndm1tY2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNTc3MzUsImV4cCI6MjA1MzYzMzczNX0.NkKbZZdYz_DaE3bXJCHCWFPWv3bFkWkc3BQdD_11kGc',
+                SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpldnRldGppeWJ4dWZndm1tY2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyODQxNDEsImV4cCI6MjA4NTg2MDE0MX0.Pn8IuZjU0pIuQFQwJd2pDHE7OeUgrbTErh_gXByWlDQ',
                 BRIDGE_URL: 'https://jevtetjiybxufgvmmclj.supabase.co/functions/v1/ask-auth-bridge',
                 FIREBASE_CONFIG: {
-                    apiKey: "YOUR_FIREBASE_API_KEY",
-                    authDomain: "YOUR_PROJECT.firebaseapp.com",
-                    projectId: "YOUR_PROJECT_ID"
+                    apiKey: "AIzaSyCqY0LX3p_Y-oJ52D-RcOd6URjy3mRRvjU",
+                    authDomain: "ask-unified-login.firebaseapp.com",
+                    projectId: "ask-unified-login"
                 }
             };
+
+            // Initialize Supabase Client
+            const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
             // Initialize Firebase
             if (!firebase.apps.length) {
@@ -1481,7 +1487,7 @@
                 sessionStorage.setItem('_tk', _0x8d7c);
             }
             
-            // --- MAIN FORM HANDLER: SUPABASE + FIREBASE BRIDGE ---
+            // --- MAIN FORM HANDLER: DIRECT SUPABASE SIGNUP + EDGE FUNCTION LOGIN ---
             async function _0x2b8e(_0xe4a7, _0x9b3c) {
                 _0xe4a7.preventDefault();
                 
@@ -1506,30 +1512,10 @@
                 _0x1f8b.disabled = true;
 
                 try {
-                    // Extract form data
-                    let email, password, fullName, username, phone, dob;
-                    
-                    if (_0x9b3c === 'login') {
-                        // Login flow - get identifier (username, email, or phone)
-                        const identifier = _0x6e3a.get('_id') || _0x6e3a.get('_us') || _0x6e3a.get('_em') || _0x6e3a.get('_ph');
-                        password = _0x6e3a.get('_pw');
-                        
-                        // Determine if identifier is email, phone, or username
-                        if (identifier.includes('@')) {
-                            email = identifier;
-                        } else if (/^\+?\d{10,}$/.test(identifier)) {
-                            phone = identifier;
-                        } else {
-                            username = identifier;
-                        }
-                    } else {
-                        // Signup flow
-                        fullName = _0x6e3a.get('_nm');
-                        username = _0x6e3a.get('_usr');
-                        email = _0x6e3a.get('_em');
-                        phone = _0x6e3a.get('_ph');
-                        dob = _0x6e3a.get('_dob');
-                        password = _0x6e3a.get('_pw1');
+                    // ========== SIGNUP FLOW - Direct Supabase ==========
+                    if (_0x9b3c === 'signup') {
+                        const email = _0x6e3a.get('_em');
+                        const password = _0x6e3a.get('_pw1');
                         const confirmPassword = _0x6e3a.get('_pw2');
                         
                         // Validate password match
@@ -1539,58 +1525,86 @@
                             _0x1f8b.disabled = false;
                             return false;
                         }
-                    }
 
-                    // 1. CALL THE ASK-AUTH-BRIDGE (Supabase Edge Function)
-                    const response = await fetch(CONFIG.BRIDGE_URL, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'apikey': CONFIG.SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
-                        },
-                        body: JSON.stringify({ 
-                            action: _0x9b3c,
-                            email,
-                            password,
-                            username,
-                            phone,
-                            fullName,
-                            dob,
-                            fingerprint: await _0x9f4e()
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(result.error || result.message || 'Authentication Failed');
-                    }
-
-                    // 2. SUCCESS HANDLER
-                    if (result.success && result.customToken) {
-                        // Initialize Firebase and Sign In with the minted Custom Token
-                        await firebase.auth().signInWithCustomToken(result.customToken);
-                        
-                        _0x4d9a(result.message || "Identity Verified. Connecting...", 'success');
-                        
-                        // Redirect based on action
-                        setTimeout(() => {
-                            if (_0x9b3c === 'login') {
-                                window.location.href = '2fa-verification.html';
-                            } else {
-                                _0x4a3b('login');
-                                _0x7d2f.reset();
+                        // Sign up with Supabase
+                        const { data, error } = await supabase.auth.signUp({
+                            email: email,
+                            password: password,
+                            options: {
+                                data: {
+                                    full_name: _0x6e3a.get('_nm'),
+                                    username: _0x6e3a.get('_usr'),
+                                    phone: _0x6e3a.get('_ph'),
+                                    date_of_birth: _0x6e3a.get('_dob')
+                                }
                             }
-                        }, 1200);
-                    } else if (result.success) {
-                        // Success but no custom token (shouldn't happen normally)
-                        _0x4d9a(result.message || 'Action completed successfully', 'success');
-                        if (_0x9b3c === 'signup') {
-                            setTimeout(() => _0x4a3b('login'), 1500);
+                        });
+
+                        if (error) throw error;
+                        
+                        _0x4d9a("Account created! Please check your email for a verification link.", 'success');
+                        _0x7d2f.reset();
+                        setTimeout(() => _0x4a3b('login'), 2000);
+                        
+                        _0x1f8b.classList.remove('loading');
+                        _0x1f8b.disabled = false;
+                        return false;
+                    }
+
+                    // ========== LOGIN FLOW - Supabase Edge Function + Firebase ==========
+                    if (_0x9b3c === 'login') {
+                        // Extract form data
+                        const identifier = _0x6e3a.get('_id') || _0x6e3a.get('_us') || _0x6e3a.get('_em') || _0x6e3a.get('_ph');
+                        const password = _0x6e3a.get('_pw');
+                        
+                        let email, username, phone;
+                        
+                        // Determine if identifier is email, phone, or username
+                        if (identifier.includes('@')) {
+                            email = identifier;
+                        } else if (/^\+?\d{10,}$/.test(identifier)) {
+                            phone = identifier;
+                        } else {
+                            username = identifier;
                         }
-                    } else {
-                        throw new Error(result.error || 'Unknown error occurred');
+
+                        // Call the ASK-AUTH-BRIDGE (Supabase Edge Function)
+                        const response = await fetch(CONFIG.BRIDGE_URL, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'apikey': CONFIG.SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                            },
+                            body: JSON.stringify({ 
+                                action: 'login',
+                                email,
+                                password,
+                                username,
+                                phone,
+                                fingerprint: await _0x9f4e()
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(result.error || result.message || 'Authentication Failed');
+                        }
+
+                        // Sign in with Firebase Custom Token
+                        if (result.success && result.customToken) {
+                            await firebase.auth().signInWithCustomToken(result.customToken);
+                            
+                            _0x4d9a(result.message || "Identity Verified. Connecting...", 'success');
+                            
+                            // Redirect to 2FA
+                            setTimeout(() => {
+                                window.location.href = '2fa-verification.html';
+                            }, 1200);
+                        } else {
+                            throw new Error(result.error || 'Login failed');
+                        }
                     }
 
                 } catch (err) {
