@@ -589,6 +589,137 @@
             text-decoration: underline;
         }
 
+        /* Remember Me Checkbox */
+        .remember-me-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .remember-me-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+        }
+
+        .remember-me-container label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s;
+        }
+
+        .remember-me-container label:hover {
+            color: var(--text-primary);
+        }
+
+        /* MPIN Modal Overlay */
+        .glass-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .glass-modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .glass-modal h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .mpin-box {
+            width: 280px;
+            padding: 20px;
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 12px;
+            background: var(--bg-glass);
+            border: 2px solid var(--border-glass);
+            border-radius: 16px;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+
+        .mpin-box:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .glass-modal .glass-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px var(--shadow-glow);
+            margin-bottom: 16px;
+        }
+
+        .glass-modal .glass-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px var(--shadow-glow);
+        }
+
+        .glass-modal p {
+            color: var(--text-tertiary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .glass-modal p:hover {
+            color: var(--accent-primary);
+            text-decoration: underline;
+        }
+
+        /* Username Status Indicator */
+        #userStatus {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        #userStatus.available {
+            color: var(--accent-success);
+        }
+
+        #userStatus.taken {
+            color: var(--accent-danger);
+        }
+
+        #userStatus.checking {
+            color: var(--text-tertiary);
+        }
+
         /* ============================================
            RESPONSIVE DESIGN - ALL SCREEN SIZES
            From 320px (small phones) to 3840px+ (4K TVs)
@@ -1265,6 +1396,12 @@
                                autocomplete="current-password">
                     </div>
 
+                    <!-- Remember Me -->
+                    <div class="remember-me-container">
+                        <input type="checkbox" id="rememberMe" name="_rem">
+                        <label for="rememberMe">Remember me for 15 days</label>
+                    </div>
+
                     <button type="submit" 
                             class="submit-btn login-btn w-full py-4 text-white text-base font-bold rounded-xl relative z-10">
                         <span>Sign In Securely</span>
@@ -1293,21 +1430,24 @@
                 <form method="POST" id="_0x6b2d" class="space-y-5" onsubmit="return _0x2b8e(event, 'signup')">
                     <input type="hidden" name="_csrf" id="_csrf_signup">
 
-                    <!-- Name and Username -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="_0x1a5b" class="input-label block mb-2">Full Name</label>
-                            <input type="text" id="_0x1a5b" name="_nm" required 
-                                   placeholder="John Doe" 
-                                   class="glass-input w-full px-4 py-3.5 rounded-xl text-sm"
-                                   autocomplete="name">
-                        </div>
-                        <div>
-                            <label for="_0x9c3e" class="input-label block mb-2">Username</label>
+                    <!-- Full Name -->
+                    <div>
+                        <label for="_0x1a5b" class="input-label block mb-2">Full Name</label>
+                        <input type="text" id="_0x1a5b" name="_nm" required 
+                               placeholder="John Doe" 
+                               class="glass-input w-full px-4 py-3.5 rounded-xl text-sm"
+                               autocomplete="name">
+                    </div>
+
+                    <!-- Username with availability check -->
+                    <div>
+                        <label for="_0x9c3e" class="input-label block mb-2">Username</label>
+                        <div style="position: relative;">
                             <input type="text" id="_0x9c3e" name="_usr" required 
                                    placeholder="johndoe88" 
                                    class="glass-input w-full px-4 py-3.5 rounded-xl text-sm"
                                    autocomplete="username">
+                            <span id="userStatus" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 600;"></span>
                         </div>
                     </div>
 
@@ -1371,6 +1511,14 @@
         </div>
     </main>
 
+    <!-- MPIN Overlay Modal -->
+    <div id="mpinOverlay" class="glass-modal hidden">
+        <h3>Enter 6-Digit MPIN</h3>
+        <input type="password" id="mpinInput" maxlength="6" class="mpin-box" placeholder="••••••" autocomplete="off" inputmode="numeric">
+        <button onclick="verifyMPIN()" class="glass-btn">Unlock Dashboard</button>
+        <p onclick="showRecovery()">Forgot MPIN? Use Recovery ID</p>
+    </div>
+
     <script>
         // ASK Connect - Supabase + Firebase Authentication Bridge
         (function(_0xd3c4) {
@@ -1379,12 +1527,12 @@
             // --- ASK CONNECT CLOUD CONFIGURATION ---
             const CONFIG = {
                 SUPABASE_URL: 'https://jevtetjiybxufgvmmclj.supabase.co',
-                SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpldnRldGppeWJ4dWZndm1tY2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyODQxNDEsImV4cCI6MjA4NTg2MDE0MX0.Pn8IuZjU0pIuQFQwJd2pDHE7OeUgrbTErh_gXByWlDQ',
+                SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpldnRldGppeWJ4dWZndm1tY2xqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgwNTc3MzUsImV4cCI6MjA1MzYzMzczNX0.NkKbZZdYz_DaE3bXJCHCWFPWv3bFkWkc3BQdD_11kGc',
                 BRIDGE_URL: 'https://jevtetjiybxufgvmmclj.supabase.co/functions/v1/ask-auth-bridge',
                 FIREBASE_CONFIG: {
-                    apiKey: "AIzaSyCqY0LX3p_Y-oJ52D-RcOd6URjy3mRRvjU",
-                    authDomain: "ask-unified-login.firebaseapp.com",
-                    projectId: "ask-unified-login"
+                    apiKey: "YOUR_FIREBASE_API_KEY",
+                    authDomain: "YOUR_PROJECT.firebaseapp.com",
+                    projectId: "YOUR_PROJECT_ID"
                 }
             };
 
@@ -1526,6 +1674,11 @@
                             return false;
                         }
 
+                        console.log('Starting Supabase signup...');
+
+                        // Generate ASK ID
+                        const askId = generateASKID();
+
                         // Sign up with Supabase
                         const { data, error } = await supabase.auth.signUp({
                             email: email,
@@ -1535,14 +1688,32 @@
                                     full_name: _0x6e3a.get('_nm'),
                                     username: _0x6e3a.get('_usr'),
                                     phone: _0x6e3a.get('_ph'),
-                                    date_of_birth: _0x6e3a.get('_dob')
+                                    date_of_birth: _0x6e3a.get('_dob'),
+                                    ask_id: askId,
+                                    fingerprint: await _0x9f4e()
                                 }
                             }
                         });
 
-                        if (error) throw error;
+                        if (error) {
+                            console.error('Supabase Signup Error:', error);
+                            throw new Error(error.message || 'Signup failed');
+                        }
+
+                        console.log('Signup successful:', data);
                         
-                        _0x4d9a("Account created! Please check your email for a verification link.", 'success');
+                        // Show ASK ID to user
+                        const askIdMessage = `🎉 Account Created Successfully!\n\n` +
+                                           `Your ASK ID: ${askId}\n\n` +
+                                           `⚠️ Save this ID - you'll need it for account recovery!\n\n` +
+                                           `Please check your email for verification link.`;
+                        
+                        alert(askIdMessage);
+                        
+                        // Store ASK ID temporarily for recovery setup
+                        sessionStorage.setItem('_ask_id', askId);
+                        
+                        _0x4d9a("Account created! Please check your email for verification.", 'success');
                         _0x7d2f.reset();
                         setTimeout(() => _0x4a3b('login'), 2000);
                         
@@ -1586,15 +1757,60 @@
                             })
                         });
 
-                        const result = await response.json();
+                        // Better error handling - get raw response first
+                        const text = await response.text();
+                        console.log("Raw Response:", text);
+                        
+                        if (!text) {
+                            throw new Error("The server returned an empty response.");
+                        }
+
+                        let result;
+                        try {
+                            result = JSON.parse(text);
+                        } catch (parseError) {
+                            console.error("JSON Parse Error:", parseError);
+                            console.error("Response Text:", text);
+                            throw new Error("Server returned invalid JSON. Check console for details.");
+                        }
 
                         if (!response.ok) {
-                            throw new Error(result.error || result.message || 'Authentication Failed');
+                            throw new Error(result.error || result.message || `Server error: ${response.status}`);
                         }
 
                         // Sign in with Firebase Custom Token
                         if (result.success && result.customToken) {
                             await firebase.auth().signInWithCustomToken(result.customToken);
+                            
+                            // Handle Remember Me
+                            const rememberMe = _0x6e3a.get('_rem') === 'on';
+                            
+                            if (rememberMe) {
+                                // Set up Remember Me for 15 days
+                                const expiryDate = new Date();
+                                expiryDate.setDate(expiryDate.getDate() + 15);
+                                
+                                localStorage.setItem('_rem', 'true');
+                                localStorage.setItem('_rem_exp', expiryDate.getTime().toString());
+                                
+                                // Generate and store MPIN
+                                const mpin = prompt('Create a 6-digit MPIN for quick login:\n(You\'ll use this instead of password for 15 days)');
+                                
+                                if (mpin && /^\d{6}$/.test(mpin)) {
+                                    localStorage.setItem('_mpin', mpin);
+                                    localStorage.setItem('_device_fp', await _0x9f4e());
+                                    
+                                    // Generate and store recovery ID
+                                    const recoveryId = generateASKID();
+                                    localStorage.setItem('_recovery_id', recoveryId);
+                                    
+                                    alert(`✅ MPIN Set Successfully!\n\nRecovery ID: ${recoveryId}\n\n⚠️ Save this ID to reset your MPIN if needed!`);
+                                } else {
+                                    _0x4d9a('Invalid MPIN. Must be 6 digits. Remember Me disabled.', 'warning');
+                                    localStorage.removeItem('_rem');
+                                    localStorage.removeItem('_rem_exp');
+                                }
+                            }
                             
                             _0x4d9a(result.message || "Identity Verified. Connecting...", 'success');
                             
@@ -1603,13 +1819,36 @@
                                 window.location.href = '2fa-verification.html';
                             }, 1200);
                         } else {
-                            throw new Error(result.error || 'Login failed');
+                            throw new Error(result.error || 'Login failed - no custom token received');
                         }
                     }
 
                 } catch (err) {
-                    _0x4d9a(err.message || 'Connection error. Please try again.');
-                    console.error('ASK Auth Error:', err);
+                    // Enhanced error logging
+                    console.error('ASK Auth Error Details:', {
+                        message: err.message,
+                        stack: err.stack,
+                        action: _0x9b3c,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    // User-friendly error messages
+                    let errorMessage = err.message || 'Connection error. Please try again.';
+                    
+                    // Provide specific guidance based on error type
+                    if (errorMessage.includes('fetch')) {
+                        errorMessage = 'Network error. Please check your internet connection.';
+                    } else if (errorMessage.includes('JSON')) {
+                        errorMessage = 'Server communication error. Please try again or contact support.';
+                    } else if (errorMessage.includes('Invalid login credentials')) {
+                        errorMessage = 'Invalid email or password. Please try again.';
+                    } else if (errorMessage.includes('User not found')) {
+                        errorMessage = 'Account not found. Please check your credentials or sign up.';
+                    } else if (errorMessage.includes('Email not confirmed')) {
+                        errorMessage = 'Please verify your email before logging in.';
+                    }
+                    
+                    _0x4d9a(errorMessage);
                 } finally {
                     _0x1f8b.classList.remove('loading');
                     _0x1f8b.disabled = false;
@@ -1621,17 +1860,88 @@
             
             window._0x2b8e = _0x2b8e;
             
-            // Browser fingerprinting for additional security
+            // Browser fingerprinting for additional security (Enhanced)
             async function _0x9f4e() {
                 const _0x3d8f = {
                     ua: navigator.userAgent,
                     lng: navigator.language,
                     tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     scr: `${screen.width}x${screen.height}x${screen.colorDepth}`,
-                    cnv: await _0x7c3a()
+                    cnv: await _0x7c3a(),
+                    plat: navigator.platform,
+                    mem: navigator.deviceMemory || 'unknown',
+                    cpu: navigator.hardwareConcurrency || 'unknown'
                 };
                 
-                return btoa(JSON.stringify(_0x3d8f));
+                // Generate SHA-256 hash of fingerprint data
+                const data = JSON.stringify(_0x3d8f);
+                const msgUint8 = new TextEncoder().encode(data);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                return hashHex;
+            }
+            
+            // Debounce utility function
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Real-time Username Availability Check (Instagram Style)
+            const usernameInput = document.getElementById('_0x9c3e');
+            const userStatus = document.getElementById('userStatus');
+
+            if (usernameInput && userStatus) {
+                usernameInput.addEventListener('input', debounce(async (e) => {
+                    const username = e.target.value.trim();
+                    
+                    if (username.length < 3) {
+                        userStatus.textContent = '';
+                        userStatus.className = '';
+                        return;
+                    }
+
+                    userStatus.textContent = '⏳ Checking...';
+                    userStatus.className = 'checking';
+
+                    try {
+                        const response = await fetch(CONFIG.BRIDGE_URL, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'apikey': CONFIG.SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
+                            },
+                            body: JSON.stringify({ 
+                                action: 'check_username',
+                                username: username
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.available) {
+                            userStatus.textContent = '✓ Available';
+                            userStatus.className = 'available';
+                        } else {
+                            userStatus.textContent = '✗ Taken';
+                            userStatus.className = 'taken';
+                        }
+                    } catch (err) {
+                        console.error('Username check error:', err);
+                        userStatus.textContent = '';
+                        userStatus.className = '';
+                    }
+                }, 500));
             }
             
             // Canvas fingerprinting
@@ -1690,6 +2000,99 @@
             _0x3e9b.tabIndex = -1;
             _0x3e9b.autocomplete = 'off';
             document.querySelectorAll('form').forEach(_0xf => _0xf.appendChild(_0x3e9b.cloneNode()));
+
+            // MPIN Functionality
+            let storedMPIN = null;
+            let mpinAttempts = 0;
+
+            function showMPINOverlay() {
+                document.getElementById('mpinOverlay').classList.remove('hidden');
+                document.getElementById('mpinInput').focus();
+            }
+
+            function hideMPINOverlay() {
+                document.getElementById('mpinOverlay').classList.add('hidden');
+                document.getElementById('mpinInput').value = '';
+            }
+
+            async function verifyMPIN() {
+                const enteredMPIN = document.getElementById('mpinInput').value;
+
+                if (enteredMPIN.length !== 6) {
+                    _0x4d9a('MPIN must be 6 digits');
+                    return;
+                }
+
+                const savedMPIN = localStorage.getItem('_mpin');
+                const savedDevice = localStorage.getItem('_device_fp');
+                const currentDevice = await _0x9f4e();
+
+                if (savedMPIN && savedMPIN === enteredMPIN && savedDevice === currentDevice) {
+                    hideMPINOverlay();
+                    _0x4d9a('Device unlocked successfully!', 'success');
+                    // Continue to dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    mpinAttempts++;
+                    if (mpinAttempts >= 3) {
+                        _0x4d9a('Too many failed attempts. Please use recovery.');
+                        localStorage.removeItem('_mpin');
+                        localStorage.removeItem('_rem');
+                        hideMPINOverlay();
+                    } else {
+                        _0x4d9a(`Invalid MPIN. ${3 - mpinAttempts} attempts remaining.`);
+                    }
+                }
+            }
+
+            function showRecovery() {
+                hideMPINOverlay();
+                const recoveryId = localStorage.getItem('_recovery_id');
+                if (recoveryId) {
+                    const entered = prompt('Enter your Recovery ID:');
+                    if (entered === recoveryId) {
+                        localStorage.removeItem('_mpin');
+                        localStorage.removeItem('_rem');
+                        _0x4d9a('MPIN reset. Please log in again.', 'success');
+                        window.location.href = 'login-fixed.html';
+                    } else {
+                        _0x4d9a('Invalid Recovery ID');
+                    }
+                } else {
+                    _0x4d9a('No recovery ID found. Please contact support.');
+                }
+            }
+
+            // Generate ASK ID (16-digit unique identifier)
+            function generateASKID() {
+                const timestamp = Date.now().toString(36).toUpperCase();
+                const random = Math.random().toString(36).substring(2, 10).toUpperCase();
+                return `ASK${timestamp}${random}`.substring(0, 16).padEnd(16, '0');
+            }
+
+            // Check if user should see MPIN screen
+            window.addEventListener('DOMContentLoaded', () => {
+                const rememberMe = localStorage.getItem('_rem');
+                const rememberExpiry = localStorage.getItem('_rem_exp');
+                const hasMPIN = localStorage.getItem('_mpin');
+
+                if (rememberMe === 'true' && hasMPIN && rememberExpiry) {
+                    const expiryDate = new Date(parseInt(rememberExpiry));
+                    if (new Date() < expiryDate) {
+                        // Show MPIN overlay instead of login
+                        showMPINOverlay();
+                    } else {
+                        // Expired, clear remember me
+                        localStorage.removeItem('_rem');
+                        localStorage.removeItem('_rem_exp');
+                        localStorage.removeItem('_mpin');
+                    }
+                }
+            });
+
+            // Expose functions globally
+            window.verifyMPIN = verifyMPIN;
+            window.showRecovery = showRecovery;
             
         })(window);
     </script>
